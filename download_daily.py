@@ -12,9 +12,9 @@ async def create_sqlite_connection():
     # 从配置文件中读取配置项
     config.read('config.ini')
     # 获取数据库连接信息
-    db_path = config.get('database', 'path')
+    db_path = config.get('sqlite', 'db')
     
-    connection = await aiosqlite.connect(db_path)
+    connection = await aiosqlite.connect(f"{db_path}.db")
     return connection
 
 async def insert_stock_data(ts_code, recent_trading_date, connection, semaphore):
@@ -86,7 +86,7 @@ async def main():
     t0 = time.time()
     db_connection = await create_sqlite_connection()
     cursor = await db_connection.cursor()
-    get_ts_code_query = "SELECT ts_code FROM stocks"
+    get_ts_code_query = "SELECT ts_code FROM stocks;"
     await cursor.execute(get_ts_code_query)
     ts_code_results = await cursor.fetchall()
     await cursor.close()
