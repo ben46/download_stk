@@ -14,7 +14,8 @@ def export_daily_csv():
     print(table_list)
     for ts_code in ts_code_results:
         table_name = f"daily{ts_code[0][:6]}"
-        if table_name not in table_list:continue
+        if table_name not in table_list:
+            continue
         print(table_name)
         table_query = f"SELECT trade_date,open,high,low,close,vol FROM {table_name};"  # 修正 SQL 查询语句
         cursor.execute(table_query)
@@ -25,9 +26,11 @@ def export_daily_csv():
             # 假设表的列名为第一行
             column_names = [description[0] for description in cursor.description]
             csv_file.write(','.join(column_names) + '\n')
-            
+
             for row in table_results:
-                csv_file.write(','.join(map(str, row)) + '\n')
+                # 对"open"、"high"、"low"、"close" 列进行小数乘法操作
+                modified_row = [str(int(val * 1000)) if isinstance(val, float) else str(val) for val in row]
+                csv_file.write(','.join(modified_row) + '\n')
 
     # 关闭连接和游标
     cursor.close()
