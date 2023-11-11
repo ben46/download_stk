@@ -15,7 +15,7 @@ pro = ts.pro_api(tushare_key)
 
 recent_trading_date = get_recent_trading_date()
 df = pro.daily(trade_date=str(recent_trading_date))
-print(df)
+# print(df)
 
 # Create a connection to the SQLite database
 try:
@@ -40,7 +40,7 @@ try:
 
     # Loop through df's ts_code column to get namechange data and update the table
     for ts_code in df['ts_code']:
-        print(ts_code)
+        # print(ts_code)
         while True:
             try:
                 namechange_df = pro.namechange(ts_code=ts_code, fields='ts_code,name,start_date,end_date,change_reason')
@@ -58,6 +58,7 @@ try:
             insert_query = """
             INSERT OR REPLACE INTO stocks (ts_code, name) VALUES (?, ?)
             """
+            print(insert_query, ts_code, latest_name)
             cursor.execute(insert_query, (ts_code, latest_name))
             connection.commit()
 

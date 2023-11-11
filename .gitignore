@@ -1,2 +1,4 @@
 config.ini
 stocks.db
+stocks.db-journal
+daily/Configs/BearMarkets.dat

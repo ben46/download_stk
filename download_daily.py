@@ -29,7 +29,7 @@ async def process_and_insert_stock_data(ts_code, recent_trading_date, cursor, co
         TRY_COUNT = 3
         while idx < TRY_COUNT:
             try:
-                print(f"fetching {ts_code}")
+                # print(f"fetching {ts_code}")
                 df = ts.pro_bar(ts_code=ts_code, adj='qfq', start_date='20180101', end_date=str(recent_trading_date), api=pro)
                 break
             except Exception as e:
@@ -38,9 +38,10 @@ async def process_and_insert_stock_data(ts_code, recent_trading_date, cursor, co
                 idx += 1
         
         if idx >= TRY_COUNT:
+            print("try more than 3 times", ts_code)
             return
 
-        print(f"Inserting {ts_code} ...")
+        # print(f"Inserting {ts_code} ...")
         table_name = f'daily{ts_code}'
         table_name = table_name.split(".")[0]
         
@@ -76,11 +77,14 @@ async def process_and_insert_stock_data(ts_code, recent_trading_date, cursor, co
                         f"`change`=excluded.`change`, pct_chg=excluded.pct_chg, vol=excluded.vol, amount=excluded.amount"
         await cursor.executemany(insert_query, insert_data)
 
-        print(f"Finish {ts_code}")
+        # print(f"Finish {ts_code}")
         await connection.commit()
     except Exception as e:
         print(f"Error processing {ts_code}: {e}")
 
+import tqdm
+
+# 在主函数main()中创建tqdm的进度条
 async def main():
     import time
     t0 = time.time()
@@ -92,14 +96,19 @@ async def main():
     await cursor.close()
     # ts_code_results = ts_code_results[:30]
     recent_trading_date = get_recent_trading_date()
-    tasks = []
-    semaphore = asyncio.Semaphore(3)  # 每个协程都有自己的信号量，最多同时并发10个协程
-    for ts_code in ts_code_results:
-        ts_code = ts_code[0]
-        task = asyncio.create_task(insert_stock_data(ts_code, recent_trading_date, db_connection, semaphore))
-        tasks.append(task)
-    await asyncio.gather(*tasks) 
+
+    # 使用tqdm创建进度条
+    with tqdm.tqdm(total=len(ts_code_results), desc="Processing Stocks") as pbar:
+        tasks = []
+        semaphore = asyncio.Semaphore(3)  # 每个协程都有自己的信号量，最多同时并发10个协程
+        for ts_code in ts_code_results:
+            ts_code = ts_code[0]
+            task = asyncio.create_task(insert_stock_data(ts_code, recent_trading_date, db_connection, semaphore))
+            task.add_done_callback(lambda x: pbar.update(1))  # 每完成一个任务，更新进度条
+            tasks.append(task)
+        await asyncio.gather(*tasks) 
     print(time.time()-t0)
+
     
 if __name__ == "__main__":
     asyncio.run(main())
