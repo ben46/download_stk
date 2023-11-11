@@ -1,0 +1,5 @@
+[tushare]
+key = 
+
+[sqlite]
+db = stocks
