@@ -17,7 +17,7 @@ def export_daily_csv():
         if table_name not in table_list:
             continue
         print(table_name)
-        table_query = f"SELECT trade_date,open,high,low,close,vol FROM {table_name};"  # 修正 SQL 查询语句
+        table_query = f"SELECT trade_date,open,high,low,close,vol FROM {table_name} order by trade_date desc;"  # 修正 SQL 查询语句
         cursor.execute(table_query)
         table_results = cursor.fetchall()
 
@@ -30,6 +30,10 @@ def export_daily_csv():
             for row in table_results:
                 # 对"open"、"high"、"low"、"close" 列进行小数乘法操作
                 modified_row = [str(int(val * 1000)) if isinstance(val, float) else str(val) for val in row]
+                
+                # 将日期格式从 "yyyyMMdd" 改为 "yyyy-MM-dd"
+                modified_row[0] = f"{modified_row[0][:4]}-{modified_row[0][4:6]}-{modified_row[0][6:]}"
+                
                 csv_file.write(','.join(modified_row) + '\n')
 
     # 关闭连接和游标

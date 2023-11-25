@@ -3,3 +3,6 @@ stocks.db
 stocks.db-journal
 daily/Configs/BearMarkets.dat
 daily/Configs/Filter.cfg
+daily/Configs/Sim.cfg
+**.log
+logs/**
