@@ -1,2 +1,2 @@
 # cd /Users/nobbyheell/Documents/workspace/download_stk/ && python3 /Users/nobbyheell/Documents/workspace/download_stk/download_stock_list.py && python3 /Users/nobbyheell/Documents/workspace/download_stk/download_daily.py && python3 /Users/nobbyheell/Documents/workspace/download_stk/export_daily_csv.py
-cd /Users/nobbyheell/Documents/workspace/download_stk/ && python3 /Users/nobbyheell/Documents/workspace/download_stk/download_daily.py && python3 /Users/nobbyheell/Documents/workspace/download_stk/export_daily_csv.py
+cd ~/Documents/workspace/download_stk/ && python3 ~/Documents/workspace/download_stk/download_daily_by_trade_date.py && python3 ~/Documents/workspace/download_stk/export_daily_csv.py
