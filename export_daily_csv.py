@@ -1,5 +1,5 @@
 from create_sqlite_conn import create_sqlite_connection
-
+from log import logger
 def export_daily_csv():
     # 创建连接
     connection = create_sqlite_connection()
@@ -8,20 +8,21 @@ def export_daily_csv():
     get_ts_code_query = "SELECT ts_code FROM stocks;"
     cursor.execute(get_ts_code_query)
     ts_code_results = cursor.fetchall()
-    print(ts_code_results)
+    logger.info(ts_code_results)
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     table_list = [table[0] for table in cursor.fetchall()]
-    print(table_list)
+    logger.info(table_list)
     for ts_code in ts_code_results:
-        table_name = f"daily{ts_code[0][:6]}"
+        output_code = ts_code[0][:6]
+        table_name = f"daily{output_code}"
         if table_name not in table_list:
             continue
-        print(table_name)
+        # logger.info(output_code)
         table_query = f"SELECT trade_date,open,high,low,close,vol FROM {table_name} order by trade_date desc;"  # 修正 SQL 查询语句
         cursor.execute(table_query)
         table_results = cursor.fetchall()
 
-        export_path = f"daily/{table_name}.csv"
+        export_path = f"daily/{output_code}.csv"
         with open(export_path, 'w') as csv_file:
             # 假设表的列名为第一行
             column_names = [description[0] for description in cursor.description]
