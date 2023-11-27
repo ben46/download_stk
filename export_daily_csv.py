@@ -28,12 +28,14 @@ def export_daily_csv():
             folder_name = "8"
         else:
             folder_name = output_code[:3]
+        if folder_name in ["000", "002", "600", "601", "603"]:
+            continue
         # 如果文件夹不存在，就创建一个
-        export_folder = f"./daily/{folder_name}"
+        export_folder = f"./daily"
         if not os.path.exists(export_folder):
             os.mkdir(export_folder)
         # 修改导出路径
-        export_path = f"./daily/{folder_name}/{output_code}.csv"
+        export_path = f"./daily/{output_code}.csv"
         
         with open(export_path, 'w') as csv_file:
             # 假设表的列名为第一行
