@@ -1,5 +1,6 @@
 from create_sqlite_conn import create_sqlite_connection
 from log import logger
+import os
 def export_daily_csv():
     # 创建连接
     connection = create_sqlite_connection()
@@ -21,8 +22,19 @@ def export_daily_csv():
         table_query = f"SELECT trade_date,open,high,low,close,vol FROM {table_name} order by trade_date desc;"  # 修正 SQL 查询语句
         cursor.execute(table_query)
         table_results = cursor.fetchall()
-
-        export_path = f"daily/{output_code}.csv"
+        
+        # 去掉 daily 之后, 对于 8 开头的单独放一个文件夹, 其他的按照去掉 daily 之后的前三个数字单独放文件夹
+        if output_code.startswith("8"):
+            folder_name = "8"
+        else:
+            folder_name = output_code[:3]
+        # 如果文件夹不存在，就创建一个
+        export_folder = f"./daily/{folder_name}"
+        if not os.path.exists(export_folder):
+            os.mkdir(export_folder)
+        # 修改导出路径
+        export_path = f"./daily/{folder_name}/{output_code}.csv"
+        
         with open(export_path, 'w') as csv_file:
             # 假设表的列名为第一行
             column_names = [description[0] for description in cursor.description]
